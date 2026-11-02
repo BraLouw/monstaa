@@ -6,8 +6,8 @@
     <title>monstaa!</title>
     <style>
         body {
-            background-color: #111;
-            color: #fff;
+            background-color: #111111;
+            color: #ffffff;
             font-family: 'Courier New', Courier, monospace;
             display: flex;
             flex-direction: column;
@@ -23,14 +23,14 @@
             font-size: 36px;
             color: #a82323;
             letter-spacing: 2px;
-            text-shadow: 3px 3px 0px #000;
+            text-shadow: 3px 3px 0px #000000;
         }
         #game-container {
             position: relative;
             width: 600px;
             height: 200px;
-            background-color: #222;
-            border: 4px solid #444;
+            background-color: #222222;
+            border: 4px solid #444444;
             box-shadow: 0 0 20px rgba(168, 35, 35, 0.4);
             overflow: hidden;
         }
@@ -46,15 +46,14 @@
             font-size: 24px;
             font-weight: bold;
             color: #ffcc00;
-            text-shadow: 2px 2px #000;
+            text-shadow: 2px 2px #000000;
             display: none;
             z-index: 10;
         }
-        /* Controls Mapping Panel Layout */
         .settings-panel {
             margin-top: 20px;
             background-color: #1a1a1a;
-            border: 2px solid #333;
+            border: 2px solid #333333;
             border-radius: 6px;
             padding: 15px;
             width: 560px;
@@ -64,7 +63,7 @@
         }
         .settings-title {
             font-size: 14px;
-            color: #888;
+            color: #888888;
             margin: 0 0 5px 0;
             text-align: center;
             font-weight: bold;
@@ -74,7 +73,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background-color: #222;
+            background-color: #222222;
             padding: 8px 15px;
             border-radius: 4px;
             border: 1px solid #2d2d2d;
@@ -85,9 +84,9 @@
             font-weight: bold;
         }
         .key-box {
-            background-color: #333;
+            background-color: #333333;
             color: #e2b714;
-            border: 2px solid #444;
+            border: 2px solid #444444;
             padding: 6px 12px;
             font-size: 14px;
             font-weight: bold;
@@ -98,12 +97,12 @@
             transition: all 0.2s;
         }
         .key-box:hover {
-            background-color: #444;
+            background-color: #444444;
             border-color: #e2b714;
         }
         .key-box.listening {
             background-color: #a82323;
-            color: #fff;
+            color: #ffffff;
             border-color: #ff4444;
             animation: blink 1s infinite;
         }
@@ -120,7 +119,6 @@
         <canvas id="gameCanvas" width="600" height="200"></canvas>
     </div>
 
-    <!-- Interactive Remapping Panel -->
     <div class="settings-panel">
         <div class="settings-title">Control Settings (Click a key box to change mapping)</div>
         
@@ -140,21 +138,18 @@
         const ctx = canvas.getContext("2d");
         const statusBanner = document.getElementById("status-banner");
 
-        // Key Binding Configurations
         let keyConfig = {
             jump: "Space",
             attack: "Space"
         };
         let activeRemappingAction = null;
 
-        // Game State Variables
         let score = 0;
         let successfulJumps = 0;
-        let gameMode = "RUNNING"; // RUNNING, FIGHTING, GAME_OVER
+        let gameMode = "RUNNING"; 
         let gameSpeed = 4;
         let loopId;
 
-        // Low-quality Pixel Monster
         const monster = {
             x: 50,
             y: 140,
@@ -168,11 +163,11 @@
             draw() {
                 ctx.fillStyle = this.color;
                 ctx.fillRect(this.x, this.y, this.width, this.height);
-                ctx.fillStyle = "#fff";
+                ctx.fillStyle = "#ffffff";
                 ctx.fillRect(this.x + 20, this.y + 6, 6, 6);
-                ctx.fillStyle = "#000";
+                ctx.fillStyle = "#000000";
                 ctx.fillRect(this.x + 24, this.y + 8, 2, 2);
-                ctx.fillStyle = "#222";
+                ctx.fillStyle = "#222222";
                 ctx.fillRect(this.x + 16, this.y + 20, 10, 4);
                 ctx.fillRect(this.x + 20, this.y + 18, 2, 2);
             },
@@ -210,7 +205,6 @@
             }
         };
 
-        // Running Mode Obstacle
         const obstacle = {
             x: 700,
             y: 145,
@@ -242,7 +236,6 @@
             }
         };
 
-        // Fighting Mode Enemy
         let enemy = null;
         function createEnemy() {
             return {
@@ -291,7 +284,7 @@
             ctx.font = "30px Courier New";
             ctx.fillText("GAME OVER", 220, 90);
             
-            ctx.fillStyle = "#fff";
+            ctx.fillStyle = "#ffffff";
             ctx.font = "18px Courier New";
             ctx.fillText("Final Score: " + score, 230, 130);
             ctx.fillText("Press your Jump key to restart", 145, 160);
@@ -310,9 +303,17 @@
             gameLoop();
         }
 
-        // Remapping Functions
         function startRemap(action) {
-            if (activeRemappingAction) return; // Block double entry
+            if (activeRemappingAction) return; 
             activeRemappingAction = action;
             
             const element = document.getElementById(`${action}-mapping`);
+            element.innerText = "PRESS KEY...";
+            element.classList.add("listening");
+        }
+
+        window.addEventListener("keydown", (e) => {
+            if (activeRemappingAction) {
+                e.preventDefault();
+                
+                let keyName = e.code;
