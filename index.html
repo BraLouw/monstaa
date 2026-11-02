@@ -6,7 +6,7 @@
     <title>monstaa!</title>
     <style>
         body {
-            background-color: #1C3464;
+            background-color: #111111;
             color: #ffffff;
             font-family: 'Courier New', Courier, monospace;
             display: flex;
@@ -319,3 +319,74 @@
             gameMode = "GAME_OVER";
             clearInterval(gameInterval);
             
+setTimeout(() => {
+ctx.fillStyle = "rgba(0, 0, 0, 0.75)";
+ctx.fillRect(0, 0, canvas.width, canvas.height);
+ctx.fillStyle = "#ff0000";
+ctx.font = "30px Courier New";
+ctx.fillText("GAME OVER", 220, 90);
+ctx.fillStyle = "#ffffff";
+ctx.font = "18px Courier New";
+ctx.fillText("Final Score: " + score, 230, 130);
+ctx.fillText("Press your Jump key to restart", 145, 160);
+}, 10);
+}
+function resetGame() {
+score = 0;
+successfulJumps = 0;
+gameMode = "RUNNING";
+monster.y = 140;
+monster.vy = 0;
+obstacle.x = canvas.width + 100;
+obstacle.passed = false;
+enemy = null;
+statusBanner.style.display = "none";
+clearInterval(gameInterval);
+gameInterval = setInterval(gameStep, 1000 / 60);
+}
+function startRemap(action, event) {
+event.stopPropagation();
+if (activeRemappingAction) return;
+activeRemappingAction = action;
+const element = document.getElementById(${action}-mapping);
+element.innerText = "PRESS KEY...";
+element.classList.add("listening");
+}
+window.addEventListener("keydown", (e) => {
+if (activeRemappingAction) {
+e.preventDefault();
+let keyName = e.code;
+if (keyName === "Space") keyName = "Space";
+if (keyName.startsWith("Key")) keyName = keyName.replace("Key", "");
+if (keyName.startsWith("Arrow")) keyName = keyName.replace("Arrow", "");
+keyConfig[activeRemappingAction] = e.code;
+const element = document.getElementById(${activeRemappingAction}-mapping);
+element.innerText = keyName;
+element.classList.remove("listening");
+activeRemappingAction = null;
+return;
+}
+if (gameMode === "RUNNING" && e.code === keyConfig.jump) {
+e.preventDefault();
+monster.jump();
+} else if (gameMode === "FIGHTING" && e.code === keyConfig.attack) {
+e.preventDefault();
+monster.attack();
+} else if (gameMode === "GAME_OVER" && e.code === keyConfig.jump) {
+e.preventDefault();
+resetGame();
+}
+});
+function gameStep() {
+ctx.fillStyle = "#222222";
+ctx.fillRect(0, 0, canvas.width, canvas.height);
+ctx.strokeStyle = "#555555";
+ctx.lineWidth = 2;
+ctx.beginPath();
+ctx.moveTo(0, 170);
+ctx.lineTo(canvas.width, 170);
+ctx.stroke();
+ctx.fillStyle = "#ffffff";
+ctx.font = "16px Courier New";
+ctx.fillText("SCORE: " + score, 20, 30);
+ctx.fillText("JUMPS: " + successfulJumps + "/5", 20, 55);
