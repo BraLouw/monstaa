@@ -150,7 +150,7 @@
     <h1>monstaa!</h1>
     <div id="game-container">
         <div id="start-overlay">
-            <button id="start-btn" onclick="startGame()">START GAME</button>
+<button id="start-btn" onclick="window.startGame()">START GAME</button>
         </div>
         <div id="status-banner">FIGHT!</div>
         <!-- FIXED: Set width and height dimensions directly into the canvas element properties -->
@@ -303,7 +303,7 @@
             };
         }
 
-        function startGame() {
+        window.startGame = function() {
             startOverlay.style.display = "none";
             resetGame();
         }
