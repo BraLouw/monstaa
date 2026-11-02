@@ -6,7 +6,7 @@
     <title>monstaa!</title>
     <style>
         body {
-            background-color: #111111;
+            background-color: #1C3464;
             color: #ffffff;
             font-family: 'Courier New', Courier, monospace;
             display: flex;
@@ -36,6 +36,7 @@
         }
         canvas {
             display: block;
+            background-color: #222222;
             image-rendering: pixelated;
         }
         #status-banner {
@@ -49,6 +50,39 @@
             text-shadow: 2px 2px #000000;
             display: none;
             z-index: 10;
+        }
+        #start-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 20;
+        }
+        #start-btn {
+            background-color: #238636;
+            border: 3px solid #2ea44f;
+            color: #ffffff;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 22px;
+            font-weight: bold;
+            padding: 12px 35px;
+            border-radius: 6px;
+            cursor: pointer;
+            box-shadow: 0 4px 0px #144f1e;
+            text-shadow: 1px 1px 0px #000000;
+            outline: none;
+        }
+        #start-btn:hover {
+            background-color: #2ea44f;
+        }
+        #start-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 0px 0px #144f1e;
         }
         .settings-panel {
             margin-top: 20px;
@@ -115,21 +149,22 @@
 
     <h1>monstaa!</h1>
     <div id="game-container">
+        <div id="start-overlay">
+            <button id="start-btn" onclick="startGame()">START GAME</button>
+        </div>
         <div id="status-banner">FIGHT!</div>
         <canvas id="gameCanvas" width="600" height="200"></canvas>
     </div>
 
     <div class="settings-panel">
         <div class="settings-title">Control Settings (Click a key box to change mapping)</div>
-        
         <div class="control-row">
             <span class="control-label">Jump (Running Mode)</span>
-            <div id="jump-mapping" class="key-box" onclick="startRemap('jump')">Space</div>
+            <div id="jump-mapping" class="key-box" onclick="startRemap('jump', event)">Space</div>
         </div>
-        
         <div class="control-row">
             <span class="control-label">Attack / Tag (Fight Mode)</span>
-            <div id="attack-mapping" class="key-box" onclick="startRemap('attack')">Space</div>
+            <div id="attack-mapping" class="key-box" onclick="startRemap('attack', event)">Space</div>
         </div>
     </div>
 
@@ -137,6 +172,7 @@
         const canvas = document.getElementById("gameCanvas");
         const ctx = canvas.getContext("2d");
         const statusBanner = document.getElementById("status-banner");
+        const startOverlay = document.getElementById("start-overlay");
 
         let keyConfig = {
             jump: "Space",
@@ -146,9 +182,9 @@
 
         let score = 0;
         let successfulJumps = 0;
-        let gameMode = "RUNNING"; 
-        let gameSpeed = 4;
-        let loopId;
+        let gameMode = "NOT_STARTED"; 
+        let gameSpeed = 5;
+        let gameInterval = null;
 
         const monster = {
             x: 50,
@@ -268,6 +304,11 @@
             };
         }
 
+        function startGame() {
+            startOverlay.style.display = "none";
+            resetGame();
+        }
+
         function triggerFightMode() {
             gameMode = "FIGHTING";
             statusBanner.style.display = "block";
@@ -276,44 +317,5 @@
 
         function gameOver() {
             gameMode = "GAME_OVER";
-            cancelAnimationFrame(loopId);
-            ctx.fillStyle = "rgba(0, 0, 0, 0.75)";
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            clearInterval(gameInterval);
             
-            ctx.fillStyle = "#ff0000";
-            ctx.font = "30px Courier New";
-            ctx.fillText("GAME OVER", 220, 90);
-            
-            ctx.fillStyle = "#ffffff";
-            ctx.font = "18px Courier New";
-            ctx.fillText("Final Score: " + score, 230, 130);
-            ctx.fillText("Press your Jump key to restart", 145, 160);
-        }
-
-        function resetGame() {
-            score = 0;
-            successfulJumps = 0;
-            gameMode = "RUNNING";
-            monster.y = 140;
-            monster.vy = 0;
-            obstacle.x = canvas.width + 100;
-            obstacle.passed = false;
-            enemy = null;
-            statusBanner.style.display = "none";
-            gameLoop();
-        }
-
-        function startRemap(action) {
-            if (activeRemappingAction) return; 
-            activeRemappingAction = action;
-            
-            const element = document.getElementById(`${action}-mapping`);
-            element.innerText = "PRESS KEY...";
-            element.classList.add("listening");
-        }
-
-        window.addEventListener("keydown", (e) => {
-            if (activeRemappingAction) {
-                e.preventDefault();
-                
-                let keyName = e.code;
