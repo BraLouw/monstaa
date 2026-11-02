@@ -255,7 +255,14 @@
             },
             update() {
                 this.x -= gameSpeed;
-
+if (
+    monster.x + monster.width > this.x &&
+    monster.x < this.x + this.width &&
+    monster.y + monster.height > this.y
+) {
+    gameOver();
+    return;
+}
                 if (!this.passed && this.x < monster.x) {
                     this.passed = true;
                     score += 10;
