@@ -314,5 +314,74 @@
             enemy = createEnemy();
         }
 
-        function gameOver() {
-            gameMode = "GAME_OVER";
+        
+    gameMode = "GAME_OVER";
+    clearInterval(gameInterval);
+    statusBanner.style.display = "block";
+    statusBanner.textContent = "GAME OVER!";
+    
+    startOverlay.style.display = "flex";
+    document.getElementById("start-btn").textContent = "PLAY AGAIN";
+}
+
+function resetGame() {
+    score = 0;
+    successfulJumps = 0;
+    gameSpeed = 5;
+    gameMode = "RUNNING";
+
+    monster.x = 50;
+    monster.y = 140;
+    monster.vy = 0;
+    monster.isGrounded = true;
+    monster.color = "#44aa44";
+
+    obstacle.x = 700;
+    obstacle.passed = false;
+
+    enemy = null;
+
+    statusBanner.style.display = "none";
+
+    if (gameInterval) clearInterval(gameInterval);
+
+    gameInterval = setInterval(gameLoop, 20);
+}
+
+function gameLoop() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    if (gameMode === "RUNNING") {
+        monster.update();
+        obstacle.update();
+
+        monster.draw();
+        obstacle.draw();
+
+    } else if (gameMode === "FIGHTING") {
+        monster.update();
+        enemy.update();
+
+        monster.draw();
+        enemy.draw();
+    }
+
+    if (gameMode !== "GAME_OVER") {
+        ctx.fillStyle = "#ffffff";
+        ctx.font = "14px Courier New";
+        ctx.fillText("Score: " + score, 10, 20);
+    }
+}
+
+document.addEventListener("keydown", function(event) {
+    if (event.code === keyConfig.jump) {
+        if (gameMode === "RUNNING") {
+            event.preventDefault();
+            monster.jump();
+        } else if (gameMode === "FIGHTING") {
+            event.preventDefault();
+            monster.attack();
+        }
+    }
+});
+
