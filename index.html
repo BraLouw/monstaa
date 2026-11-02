@@ -308,20 +308,21 @@
             resetGame();
         }
 
-        function triggerFightMode() {
-            gameMode = "FIGHTING";
-            statusBanner.style.display = "block";
-            enemy = createEnemy();
-        }
+   function triggerFightMode() {
+    gameMode = "FIGHTING";
+    statusBanner.style.display = "block";
+    enemy = createEnemy();
+}
 
-        
+function gameOver() {
     gameMode = "GAME_OVER";
     clearInterval(gameInterval);
     statusBanner.style.display = "block";
     statusBanner.textContent = "GAME OVER!";
-    
+
     startOverlay.style.display = "flex";
     document.getElementById("start-btn").textContent = "PLAY AGAIN";
+}
 }
 
 function resetGame() {
